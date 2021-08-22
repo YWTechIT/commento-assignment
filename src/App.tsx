@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axios, { AxiosResponse } from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Container from "./components/atoms/container";
+import Container from "./components/organisms/container";
 import Header from "./components/molecules/header";
 import Login from "./components/molecules/login";
 import Feed from "./components/organisms/feed";
-import { Data } from "./types";
-import styled from "styled-components";
-import FilterGroup from "./components/molecules/filter";
+import { Data, SortType } from "./types";
 import Loading from "./components/atoms/loading";
+import DataGrid from "./components/organisms/dataGrid";
+import Main from "./components/organisms/main";
 
 const App = () => {
   const [data, setData] = useState<Data[]>([]);
@@ -16,6 +16,19 @@ const App = () => {
   const [error, setError] = useState<Error>();
   const [currentPostId, setCurrentPostId] = useState<number>(1);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const handleSort = useCallback(
+    (sort: SortType) => {
+      if (sort === "asc") {
+        const asc = [...data].sort((a, b) => a.id - b.id);
+        setData(asc);
+      } else {
+        const desc = [...data].sort((a, b) => b.id - a.id);
+        setData(desc);
+      }
+    },
+    [data]
+  );
 
   const getPosts = useCallback(
     async (currentPostId: number) => {
@@ -25,7 +38,7 @@ const App = () => {
           {
             params: {
               headers: "Accept: application/json",
-              page: { currentPostId },
+              page: currentPostId,
               ord: "asc",
               category: [1, 2, 3],
               limit: 10,
@@ -33,19 +46,13 @@ const App = () => {
           }
         );
         setData([...data, ...response.data.data]);
-        setLoading(false);
+        setCurrentPostId((currentPostId) => currentPostId + 1);
       } catch (e) {
         setError(e);
       }
     },
     [data]
   );
-
-  // init data
-  useEffect(() => {
-    setLoading(true);
-    getPosts(currentPostId);
-  }, []);
 
   // useIntersectionObserver data
   useEffect(() => {
@@ -54,7 +61,6 @@ const App = () => {
       setTimeout(() => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && loadMoreRef.current) {
-            setCurrentPostId((currentPostId) => currentPostId + 1);
             getPosts(currentPostId);
           }
         });
@@ -73,7 +79,7 @@ const App = () => {
       io.unobserve(el);
       setLoading(false);
     };
-  }, [getPosts]);
+  }, [currentPostId, getPosts]);
 
   // get ads
   // useEffect(() => {
@@ -89,12 +95,6 @@ const App = () => {
   //   getAds();
   // }, []);
 
-  const MainWrapper = styled.main`
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  `;
-
   if (error) {
     return <div>Error...</div>;
   }
@@ -104,10 +104,10 @@ const App = () => {
       <Header>‘[제출일] 이름’ 을 작성해주세요:)</Header>
       <Container>
         <Login />
-        <MainWrapper>
-          <FilterGroup />
+        <Main>
+          <DataGrid handleSort={handleSort} />
           {data && data.map((item) => <Feed key={item.id} item={item}></Feed>)}
-        </MainWrapper>
+        </Main>
       </Container>
       <div ref={loadMoreRef}></div>
       {loading && <Loading>Loading...</Loading>}
