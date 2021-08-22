@@ -7,3 +7,5 @@ export interface Data {
     updated_at: string;
     user_id: number;
 }
+
+export type SortType = "asc" | "desc";
