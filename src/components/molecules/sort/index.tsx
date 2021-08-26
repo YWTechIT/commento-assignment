@@ -7,7 +7,7 @@ interface SortProps {
 
 const SortGroup = styled.article`
   display: flex;
-  padding: 10px 15px;
+  padding: 10px 0px;
   align-self: center;
 `;
 
@@ -16,9 +16,6 @@ const SortBy = styled.label`
   margin-right: 12px;
   align-items: center;
   cursor: pointer;
-  &:hover{
-    background-color: rgb(255, 233, 146);
-  }
 `;
 
 const DotStyle = styled.span`

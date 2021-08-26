@@ -6,7 +6,6 @@ interface HeaderProps {
 }
 
 const HeaderStyle = styled.header`
-  width: 100%;
   background-color: #f5dcea;
   font-size: 16px;
   padding: 10px 15px;
