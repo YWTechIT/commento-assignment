@@ -2,9 +2,9 @@ import axios, { AxiosResponse } from "axios";
 import { useInfiniteQuery } from "react-query";
 import { Data } from "../../types";
 
-type Response = { data: Data[]; pageParam: number };
+type PostResponse = { data: Data[]; pageParam: number };
 
-async function getPosts({ pageParam = 1 }): Promise<Response> {
+async function getPosts({ pageParam = 1 }): Promise<PostResponse> {
   const response: AxiosResponse<any> = await axios.get("https://problem.comento.kr/api/list", {
     params: {
       headers: "Accept: application/json",
@@ -21,7 +21,7 @@ async function getPosts({ pageParam = 1 }): Promise<Response> {
 }
 
 export function usePosts() {
-  return useInfiniteQuery("usePosts", getPosts, {
+  return useInfiniteQuery<PostResponse, Error>("usePosts", getPosts, {
     getNextPageParam: (nextPage) => nextPage.pageParam,
   });
 }
