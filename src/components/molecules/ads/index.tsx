@@ -28,16 +28,22 @@ const AdHeaderId = styled.section`
 `;
 
 const AdContentWrapper = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 16.5px;
+  
   @media screen and (min-width: 600px) {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
     flex-grow: 1;
+    margin-bottom: 0px
   }
 `;
 
 const AdImg = styled.img`
-  width: 100%;
+  width: 50%;
+  margin-bottom: 16.5px;
 
   @media screen and (min-width: 600px) {
     width: 310px;
@@ -49,7 +55,6 @@ const AdImg = styled.img`
 const AdContents = styled.section`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   min-width: 0;
 `;
 
