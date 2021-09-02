@@ -1,22 +1,25 @@
-import axios, {AxiosResponse} from "axios";
-import { useQuery } from "react-query";
-import { AdsData } from "../../types";
+import axios from "axios";
+import { useInfiniteQuery } from "react-query";
+import { AdData } from "../../types";
 
-type AdResponse = { data: AdsData[]; pageParam: number};
+type AdResponse = { data: AdData[]; pageParam: number};
 
-async function getAds({ pageParam = 1 }): Promise<AdResponse> {
-  const response: AxiosResponse<any> = await axios.get("https://problem.comento.kr/api/ads", {
+async function getAds(pageParam: number): Promise<AdResponse> {
+  const response = await axios.get("https://problem.comento.kr/api/ads", {
     params: {
       page: pageParam,
       limit: 5,
     },
   });
+
   return {
     data: response.data.data,
     pageParam: pageParam + 1,
   };
 }
 
-export function useAds(){
-  return useQuery<AdResponse, Error>("useAds", getAds)
+export function useAds() {
+  return useInfiniteQuery("useAds", ({pageParam=1}) => getAds(pageParam), {
+    getNextPageParam: (nextPage) => nextPage.pageParam,
+  });
 }
