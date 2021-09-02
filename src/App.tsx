@@ -8,22 +8,36 @@ import Loading from "./components/atoms/loading";
 import DataGrid from "./components/organisms/dataGrid";
 import Main from "./components/organisms/main";
 import { usePosts } from "./hooks/usePosts";
-import { SortType } from "./types";
+import { HandleSortType, SortType } from "./types";
+import { useAds } from "./hooks/useAds";
+import Ads from "./components/molecules/ads";
 
 const App = () => {
-  const { data, fetchNextPage, hasNextPage, status, isFetchingNextPage } = usePosts();
-  const [showDesc, setShowDesc] = useState<boolean>(false);
-  const posts = showDesc ? data?.pages.flatMap((item) => item.data).sort((a, b) => b.id-a.id) : data?.pages.flatMap((item) => item.data);
+  const [sort, setSort] = useState<SortType>({ sort: "asc" });
+
+  const handleSort = useCallback((sort: HandleSortType) => {
+    sort === "asc" ? setSort({ sort: "asc" }) : setSort({ sort: "desc" });
+  }, []);
+
+  const {
+    data,
+    fetchNextPage: postFetchNextPage,
+    hasNextPage,
+    status,
+    isFetchingNextPage,
+  } = usePosts(sort);
+  const posts = data?.pages.flatMap((item) => item.data);
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  
-  const handleSort = useCallback((sort: SortType) => sort === "desc" ? setShowDesc(true) : setShowDesc(false), []);
-  
+
+  const { data: adData, fetchNextPage: adFetchNextPage } = useAds();
+  const adPosts = adData?.pages.flatMap((items) => items.data);
+
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       setTimeout(() => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && hasNextPage && loadMoreRef.current)
-            fetchNextPage();
+            postFetchNextPage();
         });
       }, 500);
     });
@@ -35,7 +49,26 @@ const App = () => {
     observer.observe(el);
 
     return () => observer.unobserve(el);
-  }, [hasNextPage, fetchNextPage]);
+  }, [hasNextPage, postFetchNextPage]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      setTimeout(() => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && hasNextPage && loadMoreRef.current)
+            adFetchNextPage();
+        });
+      }, 500);
+    });
+
+    const el = loadMoreRef && loadMoreRef.current;
+
+    if (!el) return;
+
+    observer.observe(el);
+
+    return () => observer.unobserve(el);
+  }, [hasNextPage, adFetchNextPage]);
 
   return (
     <>
@@ -43,11 +76,25 @@ const App = () => {
       <Container>
         <Login />
         <Main>
-          <DataGrid handleSort={handleSort}/>
+          <DataGrid handleSort={handleSort} />
+
           {posts &&
-            posts.map((item) => <Feed key={item.id} item={item}></Feed>)}
+            posts.map((item, idx) => {
+              return (idx + 1) % 4 === 0 && adPosts ? (
+                <>
+                  <Feed key={item.id} item={item} />
+                  <Ads
+                    key={String(adPosts[Math.floor(idx / 4)])}
+                    item={adPosts[Math.floor(idx / 4)]}
+                  />
+                </>
+              ) : (
+                <Feed key={item.id} item={item} />
+              );
+            })}
 
           {status === "loading" && <Loading>Loading...</Loading>}
+
           <button disabled={!hasNextPage || isFetchingNextPage}>
             {isFetchingNextPage
               ? "로딩 중..."
