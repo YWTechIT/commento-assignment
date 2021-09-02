@@ -8,13 +8,14 @@ export interface Data {
     user_id: number;
 }
 
-export interface AdsData{
+export interface AdData{
     contents: string;
     created_at: string;
     id: number;
+    img: string;
     title: string;
     updated_at: string;
-    img: string;
 }
 
-export type SortType = "asc" | "desc";
+export type SortType = {sort: "asc"} | {sort: "desc"};
+export type HandleSortType = "asc" | "desc";
