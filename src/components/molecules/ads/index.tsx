@@ -1,13 +1,12 @@
 import styled from "styled-components";
 
 const AdContainer = styled.article`
-  background-color: #83caf0;
+  background-color: #d6f4a7;
   padding: 10px 15px;
   margin-bottom: 30px;
 `;
 
 const AdHeader = styled.section`
-  background-color: #e3f9c2;
   font-size: 13px;
   flex-grow: 1;
   margin-bottom: 16.5px;
@@ -42,7 +41,6 @@ const Title = styled.section`
   display: -webkit-box;
   font-size: 18px;
   font-weight: bold;
-  background-color: bisque;
   margin-bottom: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -53,7 +51,6 @@ const Title = styled.section`
 const Contents = styled.section`
   display: -webkit-box;
   font-size: 16px;
-  background-color: gainsboro;
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;

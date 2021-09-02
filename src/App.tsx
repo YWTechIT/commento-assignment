@@ -1,116 +1,63 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import axios, { AxiosResponse } from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Container from "./components/atoms/container";
+import Container from "./components/organisms/container";
 import Header from "./components/molecules/header";
 import Login from "./components/molecules/login";
 import Feed from "./components/organisms/feed";
-import { Data } from "./types";
-import styled from "styled-components";
-import FilterGroup from "./components/molecules/filter";
 import Loading from "./components/atoms/loading";
+import DataGrid from "./components/organisms/dataGrid";
+import Main from "./components/organisms/main";
+import { usePosts } from "./hooks/usePosts";
+import { SortType } from "./types";
 
 const App = () => {
-  const [data, setData] = useState<Data[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error>();
-  const [currentPostId, setCurrentPostId] = useState<number>(1);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-  const getPosts = useCallback(
-    async (currentPostId: number) => {
-      try {
-        const response: AxiosResponse<any> = await axios.get(
-          "https://problem.comento.kr/api/list",
-          {
-            params: {
-              headers: "Accept: application/json",
-              page: { currentPostId },
-              ord: "asc",
-              category: [1, 2, 3],
-              limit: 10,
-            },
-          }
-        );
-        setData([...data, ...response.data.data]);
-        setLoading(false);
-      } catch (e) {
-        setError(e);
-      }
-    },
-    [data]
-  );
-
-  // init data
+  const { data, fetchNextPage, hasNextPage, status, isFetchingNextPage } = usePosts();
+  const [showDesc, setShowDesc] = useState<boolean>(false);
+  const posts = showDesc ? data?.pages.flatMap((item) => item.data).sort((a, b) => b.id-a.id) : data?.pages.flatMap((item) => item.data);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  
+  const handleSort = useCallback((sort: SortType) => sort === "desc" ? setShowDesc(true) : setShowDesc(false), []);
+  
   useEffect(() => {
-    setLoading(true);
-    getPosts(currentPostId);
-  }, []);
-
-  // useIntersectionObserver data
-  useEffect(() => {
-    setLoading(true);
-    const io = new IntersectionObserver(function (entries) {
+    const observer = new IntersectionObserver((entries) => {
       setTimeout(() => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && loadMoreRef.current) {
-            setCurrentPostId((currentPostId) => currentPostId + 1);
-            getPosts(currentPostId);
-          }
+          if (entry.isIntersecting && hasNextPage && loadMoreRef.current)
+            fetchNextPage();
         });
-      }, 1000);
+      }, 500);
     });
 
     const el = loadMoreRef && loadMoreRef.current;
 
-    if (!el) {
-      return;
-    }
+    if (!el) return;
 
-    io.observe(el);
+    observer.observe(el);
 
-    return () => {
-      io.unobserve(el);
-      setLoading(false);
-    };
-  }, [getPosts]);
-
-  // get ads
-  // useEffect(() => {
-  //   const getAds = async () => {
-  //     const response = await axios.get("https://problem.comento.kr/api/ads", {
-  //       params: {
-  //         page: 1,
-  //         limit: 5,
-  //       },
-  //     });
-  //     console.log(response);
-  //   };
-  //   getAds();
-  // }, []);
-
-  const MainWrapper = styled.main`
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  `;
-
-  if (error) {
-    return <div>Error...</div>;
-  }
+    return () => observer.unobserve(el);
+  }, [hasNextPage, fetchNextPage]);
 
   return (
     <>
       <Header>‘[제출일] 이름’ 을 작성해주세요:)</Header>
       <Container>
         <Login />
-        <MainWrapper>
-          <FilterGroup />
-          {data && data.map((item) => <Feed key={item.id} item={item}></Feed>)}
-        </MainWrapper>
+        <Main>
+          <DataGrid handleSort={handleSort}/>
+          {posts &&
+            posts.map((item) => <Feed key={item.id} item={item}></Feed>)}
+
+          {status === "loading" && <Loading>Loading...</Loading>}
+          <button disabled={!hasNextPage || isFetchingNextPage}>
+            {isFetchingNextPage
+              ? "로딩 중..."
+              : hasNextPage
+              ? "게시물 더 불러오기"
+              : "불러올 데이터가 없습니다."}
+          </button>
+          <div ref={loadMoreRef} />
+        </Main>
       </Container>
-      <div ref={loadMoreRef}></div>
-      {loading && <Loading>Loading...</Loading>}
     </>
   );
 };

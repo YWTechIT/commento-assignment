@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useAds } from "../../../hooks/useAds";
 import { Data } from "../../../types";
 import Ads from "../../molecules/ads";
 import Card from "../../molecules/card";
@@ -15,6 +16,8 @@ const FeedStyle = styled.article`
 
 const Feed = ({ item }: FeedProps) => {
   const viewAdComponent = item.id % 4;
+  const {data} = useAds();
+  console.log(data)
 
   return (
     <FeedStyle>

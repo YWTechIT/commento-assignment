@@ -10,7 +10,6 @@ const LoadingStyle = styled.article`
     font-size: 24px;
     font-weight: bold;
     justify-content: center;
-    
 `
 
 const Loading = ({children}: LoadingProps) => {

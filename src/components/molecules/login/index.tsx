@@ -16,8 +16,9 @@ const Button = styled.button`
     color: white;
     border: none;
     cursor: pointer;
+    margin-right: 32px;
     &:hover {
-      background-color: green;
+      background-color: #5cba5c;
     }
   }
 `;

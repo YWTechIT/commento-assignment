@@ -5,29 +5,25 @@ interface CategoryProps {
   item: Data;
 }
 
-const CategoryStyle = styled.article`
+const CategoryWrapper = styled.article`
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  margin-bottom: 27px;
+  margin-top: 12px;
+  margin-bottom: 8px;
 `;
 
-const CategoryName = styled.section`
-  background-color: #c3d5f5;
+const CategoryStyle = styled.section`
   font-size: 13px;
-`;
-
-const CategoryId = styled.section`
-  background-color: #ecc5f5;
-  font-size: 13px;
+  color: #7E848A;
 `;
 
 const Category = ({item}: CategoryProps) => {
   return (
-    <CategoryStyle>
-      <CategoryName>category_name</CategoryName>
-      <CategoryId>{item.category_id}</CategoryId>
-    </CategoryStyle>
+    <CategoryWrapper>
+      <CategoryStyle>category_name</CategoryStyle>
+      <CategoryStyle>{item.category_id}</CategoryStyle>
+    </CategoryWrapper>
   );
 };
 
