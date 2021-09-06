@@ -1,27 +1,31 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { useInfiniteQuery } from "react-query";
-import { Data } from "../../types";
+import { Data, SortType } from "../../types";
 
-type PostResponse = { data: Data[]; pageParam: number };
+type QueryKeyType = Array<string | SortType>
+type PostResponse = {data: Data[], pageParam: number}
 
-async function getPosts({ pageParam = 1 }): Promise<PostResponse> {
-  const response: AxiosResponse<any> = await axios.get("https://problem.comento.kr/api/list", {
+async function getPosts(queryKey: QueryKeyType, pageParam: number): Promise<PostResponse> {
+  const sortParam = queryKey[1] as SortType;
+
+  const response = await axios.get("https://problem.comento.kr/api/list", {
     params: {
       headers: "Accept: application/json",
       page: pageParam,
-      ord: "asc",
+      ord: sortParam,
       category: [1, 2, 3],
       limit: 10,
     },
   });
+
   return {
     data: response.data.data,
     pageParam: pageParam + 1,
   };
 }
 
-export function usePosts() {
-  return useInfiniteQuery<PostResponse, Error>("usePosts", getPosts, {
-    getNextPageParam: (nextPage) => nextPage.pageParam,
+export function usePosts(postParams: SortType) {
+  return useInfiniteQuery(["usePosts", postParams], ({queryKey, pageParam=1}) => getPosts(queryKey, pageParam), {
+    getNextPageParam: (nextPage) => nextPage.pageParam ?? false,
   });
 }

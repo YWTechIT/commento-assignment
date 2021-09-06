@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { SortType } from "../../../types";
+import { HandleSortType } from "../../../types";
 
 interface SortProps {
-  handleSort: (sort: SortType) => void;
+  handleSort: (sort: HandleSortType) => void;
 }
 
 const SortGroup = styled.article`

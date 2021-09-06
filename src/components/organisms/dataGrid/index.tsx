@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { SortType } from "../../../types";
+import { HandleSortType } from "../../../types";
 import Filter from "../../molecules/filter";
 import Sort from "../../molecules/sort";
 
 interface DataGridProps {
-  handleSort: (sort: SortType ) => void;
+  handleSort: (sort: HandleSortType ) => void;
 }
 
 const DataGridContainer = styled.article`
