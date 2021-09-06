@@ -2,7 +2,7 @@ export interface Data {
     category_id: number;
     contents: string;
     created_at: string;
-    id: number;
+    id: string;
     title: string;
     updated_at: string;
     user_id: number;
@@ -11,11 +11,10 @@ export interface Data {
 export interface AdData{
     contents: string;
     created_at: string;
-    id: number;
+    id: string;
     img: string;
     title: string;
     updated_at: string;
 }
 
-export type SortType = {sort: "asc"} | {sort: "desc"};
-export type HandleSortType = "asc" | "desc";
+export type SortType = "asc" | "desc"
