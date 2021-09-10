@@ -1,5 +1,7 @@
+import { HorizonStyle } from "./style";
+
 const HorizonLine = () => {
-  return <HorizonLine />
+  return <HorizonStyle />
 };
 
 export default HorizonLine;

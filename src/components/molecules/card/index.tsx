@@ -1,7 +1,6 @@
 import { Data } from "../../../types";
 import {Category, HorizonLine} from "../../../components";
-import { CardInfo, CardStyle, CreatedAt, UserId } from "./style";
-import { Contents, Title } from "../ads/style";
+import { CardInfo, CardStyle, CreatedAt, UserId, Contents, Title } from "./style";
 
 interface CardProps {
   item: Data;
