@@ -1,16 +1,13 @@
-import styled from "styled-components";
+import { FilterButton } from "./style";
 
-const FilterButton = styled.button`
-  margin: 10px 4px;
-  padding: 3px 12px;
-  border: 1px solid #E1E4E7;
-  border-radius: 3px;
-  opacity: 1px;
-  background-color: white;
-  color: #ADB5BD;
-  cursor: pointer;
-`;
+interface FilterProps {
+    showFilter: boolean;
+    toggleShowFilter: (showFilter: boolean) => void;
+    bookMark: string[];
+}
 
-const Filter = () => <FilterButton>필터</FilterButton>;
+const Filter = ({ showFilter, toggleShowFilter, bookMark }: FilterProps) => (
+    <FilterButton onClick={()=>toggleShowFilter(!showFilter)} >{showFilter ? `전체보기` : `스크랩된 ${bookMark.length} 건 보기`}</FilterButton>
+);
 
 export default Filter;

@@ -1,22 +1,18 @@
-import styled from "styled-components";
 import { Data } from "../../../types";
 import Card from "../../molecules/card";
+import { FeedStyle } from "./style";
 
 interface FeedProps {
   item: Data;
+  bookMark: string[];
+  handleBookMark: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const FeedStyle = styled.article`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-`;
-
-const Feed = ({ item }: FeedProps) => {
+const Feed = ({ item, bookMark, handleBookMark }: FeedProps) => {
   
   return (
     <FeedStyle>
-      <Card item={item} />
+      <Card item={item} bookMark={bookMark} handleBookMark={handleBookMark}/>
     </FeedStyle>
   );
 };
