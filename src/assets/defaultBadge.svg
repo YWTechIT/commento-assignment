@@ -1,0 +1,23 @@
+<svg width="20" height="21" viewBox="0 0 30 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_di)">
+<path d="M24.9498 27.5283L15.5503 22.4932C15.2065 22.309 14.7936 22.309 14.4498 22.4932L5.05028 27.5283C4.881 27.619 4.69201 27.6664 4.50004 27.6664C3.85571 27.6664 3.33337 27.1433 3.33337 26.498V4.91937C3.33337 3.95137 4.11688 3.16666 5.08337 3.16666H24.9167C25.8832 3.16666 26.6667 3.95137 26.6667 4.91937V26.498C26.6667 26.6902 26.6193 26.8795 26.5288 27.049C26.2249 27.6181 25.518 27.8327 24.9498 27.5283Z" fill="white" fill-opacity="0.6"/>
+<path d="M25.1859 27.0876L15.7864 22.0524C15.2951 21.7892 14.705 21.7892 14.2137 22.0524L4.81418 27.0876L5.05028 27.5283L4.81418 27.0876C4.71749 27.1394 4.6096 27.1664 4.50004 27.1664C4.13258 27.1664 3.83337 26.8679 3.83337 26.498V4.91937C3.83337 4.22679 4.39375 3.66666 5.08337 3.66666H24.9167C25.6063 3.66666 26.1667 4.22679 26.1667 4.91937V26.498C26.1667 26.6081 26.1396 26.7165 26.0878 26.8135C25.9139 27.1391 25.5101 27.2612 25.1859 27.0876Z" stroke="white"/>
+</g>
+<defs>
+<filter id="filter0_di" x="0.333374" y="0.166656" width="29.3333" height="30.5" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="shape" result="effect2_innerShadow"/>
+</filter>
+</defs>
+</svg>
