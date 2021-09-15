@@ -6,6 +6,7 @@ export interface Data {
     title: string;
     updated_at: string;
     user_id: number;
+    complete: boolean;
 }
 
 export interface AdData{
@@ -17,4 +18,4 @@ export interface AdData{
     updated_at: string;
 }
 
-export type SortType = "asc" | "desc"
+export type SortType = "asc" | "desc";

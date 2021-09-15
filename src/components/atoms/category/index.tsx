@@ -1,28 +1,33 @@
-import styled from "styled-components";
+import { useCallback, useState } from "react";
 import { Data } from "../../../types";
+import Badge from "../badge";
+import { CategoryStyle, CategoryWrapper } from "./style";
 
 interface CategoryProps {
   item: Data;
+  bookMark: string[];
+  handleBookMark: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const CategoryWrapper = styled.article`
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  margin-top: 12px;
-  margin-bottom: 8px;
-`;
+const onSaved = true;
+const offSaved = false;
 
-const CategoryStyle = styled.section`
-  font-size: 13px;
-  color: #7E848A;
-`;
+const Category = ({item, bookMark, handleBookMark}: CategoryProps) => {
+  const [saved, setSaved] = useState<boolean>(bookMark.includes(item.id) ? onSaved : offSaved);
 
-const Category = ({item}: CategoryProps) => {
+  const handleSaved = useCallback(() => {
+    if (saved) {
+        handleBookMark((bookMarks) => bookMarks.filter((bookMark) => bookMark !== item.id));
+    } else {
+        handleBookMark((bookMarks) => [...bookMarks, item.id]);
+    }
+    setSaved((saved) => !saved);
+}, [saved, handleBookMark, item.id]);
+
   return (
     <CategoryWrapper>
       <CategoryStyle>category_name</CategoryStyle>
-      <CategoryStyle>{item.category_id}</CategoryStyle>
+      <Badge saved={saved} handleSaved={handleSaved} />
     </CategoryWrapper>
   );
 };

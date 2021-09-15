@@ -1,23 +1,19 @@
-import styled from "styled-components";
-import { HandleSortType } from "../../../types";
-import Filter from "../../molecules/filter";
-import Sort from "../../molecules/sort";
+import { SortType } from "../../../types";
+import { Filter, Sort } from "../../../components";
+import { DataGridContainer } from "./style";
 
 interface DataGridProps {
-  handleSort: (sort: HandleSortType ) => void;
+  handleSort: (sort: SortType ) => void;
+  showFilter: boolean;
+  toggleShowFilter: (showFilter: boolean) => void;
+  bookMark: string[];
 }
 
-const DataGridContainer = styled.article`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-`;
-
-const DataGrid = ({ handleSort }: DataGridProps) => {
+const DataGrid = ({ handleSort, showFilter, toggleShowFilter, bookMark }: DataGridProps) => {
   return (
     <DataGridContainer>
       <Sort handleSort={handleSort}/>
-      <Filter />
+      <Filter showFilter={showFilter} toggleShowFilter={toggleShowFilter} bookMark={bookMark}/>
     </DataGridContainer>
   );
 };

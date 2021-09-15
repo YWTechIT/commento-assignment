@@ -1,43 +1,45 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useCallback, useEffect, useRef, useState } from "react";
-import Container from "./components/organisms/container";
-import Header from "./components/molecules/header";
-import Login from "./components/molecules/login";
-import Feed from "./components/organisms/feed";
-import Loading from "./components/atoms/loading";
-import DataGrid from "./components/organisms/dataGrid";
-import Main from "./components/organisms/main";
-import { usePosts } from "./hooks/usePosts";
-import { HandleSortType, SortType } from "./types";
-import { useAds } from "./hooks/useAds";
-import Ads from "./components/molecules/ads";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {Container, Header, Login, Feed, Loading, DataGrid, Main, Ads} from "./components";
+import { usePosts, useAds } from "./hooks";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import { SortType } from "./types";
 
 const App = () => {
-  const [sort, setSort] = useState<SortType>({ sort: "asc" });
-
-  const handleSort = useCallback((sort: HandleSortType) => {
-    sort === "asc" ? setSort({ sort: "asc" }) : setSort({ sort: "desc" });
+  // asc, desc
+  const [sort, setSort] = useState<SortType>("asc");
+  const handleSort = useCallback((sort: SortType) => {
+    sort === "asc" ? setSort("asc") : setSort("desc");
   }, []);
 
-  const {
-    data,
-    fetchNextPage: postFetchNextPage,
-    hasNextPage,
-    status,
-    isFetchingNextPage,
+  // usePost
+  const {data: postData, fetchNextPage: postFetchNextPage, hasNextPage: postHasNextPage, status: postStatus, isFetchingNextPage: postIsFetchingNextPage,
   } = usePosts(sort);
-  const posts = data?.pages.flatMap((item) => item.data);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const posts = postData?.pages.flatMap((item) => item.data);
 
-  const { data: adData, fetchNextPage: adFetchNextPage } = useAds();
+  // useAds
+  const { data: adData, fetchNextPage: adFetchNextPage, hasNextPage: adHasNextPage } = useAds();
   const adPosts = adData?.pages.flatMap((items) => items.data);
+  const adPostFetchTrigger = posts?.length as number;
 
+  // useLocalStorage
+  const [showFilter, setShowFilter] = useState<boolean>(false);
+  const [bookMark, setBookMark] = useLocalStorage<string[]>("bookmarks", []);
+  const filterPost = posts?.map((item) => bookMark.includes(item.id) ? {...item, complete: true} : item).filter((item) => (showFilter ? item.complete : true));
+
+  const toggleShowFilter = (showFilter: boolean) => {
+    setShowFilter(showFilter);
+  }
+  console.log(bookMark)
+
+  // useIntersectionObserver
+  const loadMoreRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       setTimeout(() => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && hasNextPage && loadMoreRef.current)
-            postFetchNextPage();
+          if (!showFilter && postHasNextPage && entry.isIntersecting && loadMoreRef.current) postFetchNextPage();
+          if (!showFilter && adPostFetchTrigger % 20 > 0 && entry.isIntersecting && loadMoreRef.current && adHasNextPage) adFetchNextPage();
         });
       }, 500);
     });
@@ -49,58 +51,36 @@ const App = () => {
     observer.observe(el);
 
     return () => observer.unobserve(el);
-  }, [hasNextPage, postFetchNextPage]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      setTimeout(() => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && hasNextPage && loadMoreRef.current)
-            adFetchNextPage();
-        });
-      }, 500);
-    });
-
-    const el = loadMoreRef && loadMoreRef.current;
-
-    if (!el) return;
-
-    observer.observe(el);
-
-    return () => observer.unobserve(el);
-  }, [hasNextPage, adFetchNextPage]);
+  }, [postHasNextPage, postFetchNextPage, adHasNextPage, adFetchNextPage, adPostFetchTrigger, showFilter]);
 
   return (
     <>
       <Header>‘[제출일] 이름’ 을 작성해주세요:)</Header>
       <Container>
         <Login />
-        <Main>
-          <DataGrid handleSort={handleSort} />
-
-          {posts &&
-            posts.map((item, idx) => {
-              return (idx + 1) % 4 === 0 && adPosts ? (
-                <>
-                  <Feed key={item.id} item={item} />
-                  <Ads
-                    key={String(adPosts[Math.floor(idx / 4)])}
+        <Main>  
+          <DataGrid handleSort={handleSort} showFilter={showFilter} toggleShowFilter={toggleShowFilter} bookMark={bookMark} />
+          {filterPost &&
+            filterPost.map((item, idx) => {
+              return ((idx+1) % 4 === 0 && adPosts) ? (
+                <React.Fragment key={item.id}>
+                  <Feed key={item.id} item={item} bookMark={bookMark} handleBookMark={setBookMark}/>
+                  <Ads key={adPosts[Math.floor(idx / 4)].id}
                     item={adPosts[Math.floor(idx / 4)]}
                   />
-                </>
+                </React.Fragment>
               ) : (
-                <Feed key={item.id} item={item} />
+                <Feed key={item.id} item={item} bookMark={bookMark} handleBookMark={setBookMark} />
               );
             })}
 
-          {status === "loading" && <Loading>Loading...</Loading>}
-
-          <button disabled={!hasNextPage || isFetchingNextPage}>
-            {isFetchingNextPage
-              ? "로딩 중..."
-              : hasNextPage
+          {postStatus === "loading" && <Loading>Loading...</Loading>}
+          <button disabled={showFilter || !postHasNextPage || postIsFetchingNextPage }>
+             {postIsFetchingNextPage
+              ? "불러오는 중..."
+              : postHasNextPage
               ? "게시물 더 불러오기"
-              : "불러올 데이터가 없습니다."}
+              : "마지막 데이터 입니다."}
           </button>
           <div ref={loadMoreRef} />
         </Main>
