@@ -7,9 +7,9 @@ import { SortType } from "./types";
 
 const App = () => {
   // asc, desc
-  const [sort, setSort] = useState<SortType>("asc");
+  const [sort, setSort] = useState<SortType>(SortType.ASC);
   const handleSort = useCallback((sort: SortType) => {
-    sort === "asc" ? setSort("asc") : setSort("desc");
+    sort === SortType.ASC ? setSort(SortType.ASC) : setSort(SortType.DESC);
   }, []);
 
   // usePost
@@ -20,15 +20,16 @@ const App = () => {
   // useAds
   const { data: adData, fetchNextPage: adFetchNextPage, hasNextPage: adHasNextPage } = useAds();
   const adPosts = adData?.pages.flatMap((items) => items.data);
-  const adPostFetchTrigger = posts?.length as number;
+  const adPostLength = posts ? posts.length : 0;
+  const FetchADNeeded = adPostLength % 20 > 0
 
   // useLocalStorage
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [bookMark, setBookMark] = useLocalStorage<string[]>("bookmarks", []);
   const filterPost = posts?.map((item) => bookMark.includes(item.id) ? {...item, complete: true} : item).filter((item) => (showFilter ? item.complete : true));
 
-  const toggleShowFilter = (showFilter: boolean) => {
-    setShowFilter(showFilter);
+  const toggleShowFilter = () => {
+    setShowFilter(showFilter => !showFilter);
   }
   console.log(bookMark)
 
@@ -39,7 +40,7 @@ const App = () => {
       setTimeout(() => {
         entries.forEach((entry) => {
           if (!showFilter && postHasNextPage && entry.isIntersecting && loadMoreRef.current) postFetchNextPage();
-          if (!showFilter && adPostFetchTrigger % 20 > 0 && entry.isIntersecting && loadMoreRef.current && adHasNextPage) adFetchNextPage();
+          if (!showFilter && FetchADNeeded && entry.isIntersecting && loadMoreRef.current && adHasNextPage) adFetchNextPage();
         });
       }, 500);
     });
@@ -51,7 +52,7 @@ const App = () => {
     observer.observe(el);
 
     return () => observer.unobserve(el);
-  }, [postHasNextPage, postFetchNextPage, adHasNextPage, adFetchNextPage, adPostFetchTrigger, showFilter]);
+  }, [postHasNextPage, postFetchNextPage, adHasNextPage, adFetchNextPage, showFilter, FetchADNeeded]);
 
   return (
     <>

@@ -18,4 +18,7 @@ export interface AdData{
     updated_at: string;
 }
 
-export type SortType = "asc" | "desc";
+export enum SortType {
+    ASC = "asc",
+    DESC = "desc"
+}
