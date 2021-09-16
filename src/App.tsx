@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {Container, Header, Login, Feed, Loading, DataGrid, Main, Ads} from "./components";
+import { Facebook } from "react-content-loader";
+import {Container, Header, Login, Feed, DataGrid, Main, Ads} from "./components";
 import { usePosts, useAds } from "./hooks";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { SortType } from "./types";
@@ -24,26 +25,32 @@ const App = () => {
   const FetchADNeeded = adPostLength % 20 > 0
 
   // useLocalStorage
-  const [showFilter, setShowFilter] = useState<boolean>(false);
+  const [showScrap, setShowScrap] = useState<boolean>(false);
   const [bookMark, setBookMark] = useLocalStorage<string[]>("bookmarks", []);
-  const filterPost = posts?.map((item) => bookMark.includes(item.id) ? {...item, complete: true} : item).filter((item) => (showFilter ? item.complete : true));
+  const filterPost = posts?.map((item) => bookMark.includes(item.id) ? {...item, complete: true} : item).filter((item) => (showScrap ? item.complete : true));
 
-  const toggleShowFilter = () => {
-    setShowFilter(showFilter => !showFilter);
-  }
-  console.log(bookMark)
+  const toggleShowScrap = useCallback(() => {
+    setShowScrap(showScrap => !showScrap);
+  }, [])
 
   // useIntersectionObserver
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.5
+    };
+
     const observer = new IntersectionObserver((entries) => {
       setTimeout(() => {
         entries.forEach((entry) => {
-          if (!showFilter && postHasNextPage && entry.isIntersecting && loadMoreRef.current) postFetchNextPage();
-          if (!showFilter && FetchADNeeded && entry.isIntersecting && loadMoreRef.current && adHasNextPage) adFetchNextPage();
-        });
+          if (!showScrap && postHasNextPage && entry.isIntersecting && loadMoreRef.current) postFetchNextPage();
+          if (!showScrap && FetchADNeeded && entry.isIntersecting && loadMoreRef.current && adHasNextPage) adFetchNextPage();
+        }, options);
       }, 500);
-    });
+    }, );
 
     const el = loadMoreRef && loadMoreRef.current;
 
@@ -52,7 +59,15 @@ const App = () => {
     observer.observe(el);
 
     return () => observer.unobserve(el);
-  }, [postHasNextPage, postFetchNextPage, adHasNextPage, adFetchNextPage, showFilter, FetchADNeeded]);
+  }, [postHasNextPage, postFetchNextPage, adHasNextPage, adFetchNextPage, showScrap, FetchADNeeded]);
+
+  // skeleton UI
+  const [isLoading, setLoading] = useState<boolean>(true);
+  console.log(isLoading)
+  useEffect(() => {
+      const timer = setTimeout(() => setLoading(false), 1000);
+      return () => clearTimeout(timer);
+  }, [])
 
   return (
     <>
@@ -60,30 +75,25 @@ const App = () => {
       <Container>
         <Login />
         <Main>  
-          <DataGrid handleSort={handleSort} showFilter={showFilter} toggleShowFilter={toggleShowFilter} bookMark={bookMark} />
-          {filterPost &&
+          <DataGrid handleSort={handleSort} showScrap={showScrap} toggleShowScrap={toggleShowScrap} bookMark={bookMark} />
+          
+          {filterPost && 
             filterPost.map((item, idx) => {
               return ((idx+1) % 4 === 0 && adPosts) ? (
                 <React.Fragment key={item.id}>
-                  <Feed key={item.id} item={item} bookMark={bookMark} handleBookMark={setBookMark}/>
+                  <Feed key={item.id} item={item} bookMark={bookMark} handleBookMark={setBookMark} isLoading={isLoading}/>
                   <Ads key={adPosts[Math.floor(idx / 4)].id}
                     item={adPosts[Math.floor(idx / 4)]}
+                    isLoading={isLoading}
                   />
                 </React.Fragment>
               ) : (
-                <Feed key={item.id} item={item} bookMark={bookMark} handleBookMark={setBookMark} />
+                <Feed key={item.id} item={item} bookMark={bookMark} handleBookMark={setBookMark} isLoading={isLoading} />
               );
             })}
 
-          {postStatus === "loading" && <Loading>Loading...</Loading>}
-          <button disabled={showFilter || !postHasNextPage || postIsFetchingNextPage }>
-             {postIsFetchingNextPage
-              ? "불러오는 중..."
-              : postHasNextPage
-              ? "게시물 더 불러오기"
-              : "마지막 데이터 입니다."}
-          </button>
-          <div ref={loadMoreRef} />
+            {(!showScrap && loadMoreRef) && <><Facebook width={768}/><div ref={loadMoreRef} /></>}
+          
         </Main>
       </Container>
     </>
