@@ -4,16 +4,16 @@ import { DataGridContainer } from "./style";
 
 interface DataGridProps {
   handleSort: (sort: SortType ) => void;
-  showFilter: boolean;
-  toggleShowFilter: (showFilter: boolean) => void;
+  showScrap: boolean;
+  toggleShowScrap: () => void;
   bookMark: string[];
 }
 
-const DataGrid = ({ handleSort, showFilter, toggleShowFilter, bookMark }: DataGridProps) => {
+const DataGrid = ({ handleSort, showScrap, toggleShowScrap, bookMark }: DataGridProps) => {
   return (
     <DataGridContainer>
       <Sort handleSort={handleSort}/>
-      <Filter showFilter={showFilter} toggleShowFilter={toggleShowFilter} bookMark={bookMark}/>
+      <Filter showScrap={showScrap} toggleShowScrap={toggleShowScrap} bookMark={bookMark}/>
     </DataGridContainer>
   );
 };

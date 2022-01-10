@@ -8,8 +8,8 @@ interface SortProps {
 const Sort = ({handleSort}: SortProps) => {
     return(
         <SortGroup>
-            <SortBy onClick={() => handleSort("asc")}><DotStyle/>오름차순</SortBy>
-            <SortBy onClick={() => handleSort("desc")}><DotStyle/>내림차순</SortBy>
+            <SortBy onClick={() => handleSort(SortType.ASC)}><DotStyle/>오름차순</SortBy>
+            <SortBy onClick={() => handleSort(SortType.DESC)}><DotStyle/>내림차순</SortBy>
         </SortGroup>
     )
 }

@@ -2,7 +2,6 @@
 export { default as Badge } from "./atoms/badge";
 export { default as Category } from "./atoms/category";
 export { default as HorizonLine } from "./atoms/horizonStyle";
-export { default as Loading } from "./atoms/loading";
 
 // molecules
 export { default as Ads } from "./molecules/ads";
